@@ -5,3 +5,7 @@
 - Now Imported in local repo
 - Follow the readme for setting up the project prerequesite like
 - - setting Docker-Docker Compose
+
+# Setup ACR - Azure Container Registry 
+- Got to Azure Portal --> Serarch Container registries
+- Create a Registry 
