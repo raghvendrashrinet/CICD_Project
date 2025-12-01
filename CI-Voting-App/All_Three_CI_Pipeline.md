@@ -1,6 +1,8 @@
-# Three Pipelines 
+# Three Pipelines (Application Python/NodeJS/DotNet Image Build and Push to ACR Artifactory)
+## The Redis and Postgress Container will be created direct from Docker Image
 
-## 1. Result Pipeline 
+## 1. Result (NodeJS Application Image Build & Push  ) Pipeline
+### Result app displays the count by fetching data from PostGress DB
 ```yaml
 # Docker
 # Build and push an image to Azure Container Registry
@@ -52,7 +54,8 @@ stages:
       inputs:
         command: push
 ```
-## 2. Voter Pipeline 
+## 2. Voter  (Python Application Image Build & Push ) Pipeline
+###  Vote app records the selection to In-Memory Redis DB
 ```yaml
 # Docker
 # Build and push an image to Azure Container Registry
@@ -61,7 +64,7 @@ stages:
 trigger:
  paths:
   include:
-    - result/*
+    - vote/*
 
 resources:
 - repo: self
@@ -69,9 +72,9 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '9a09ee63-ac1c-4d59-93f6-d187a42bf201'
-  imageRepository: 'resultapp'
+  imageRepository: 'voteapp'
   containerRegistry: 'conrg1.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
+  dockerfilePath: '$(Build.SourcesDirectory)/vote/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -91,7 +94,7 @@ stages:
         containerRegistry: '$(dockerRegistryServiceConnection)'
         repository: '$(imageRepository)'
         command: 'build'
-        Dockerfile: 'result/Dockerfile'
+        Dockerfile: 'vote/Dockerfile'
         tags: '$(tag)'
 - stage: Push
   displayName: push stage
@@ -104,7 +107,8 @@ stages:
       inputs:
         command: push
 ```
-## 3. Redis  Pipeline
+## 3. Worker ((DotNet Application Image Build & Push  )  Pipeline
+### Worker app Fetchs  records from Redis and Populates the Postgress DB 
 ```yaml
 # Docker
 # Build and push an image to Azure Container Registry
@@ -113,7 +117,7 @@ stages:
 trigger:
  paths:
   include:
-    - result/*
+    - worker/*
 
 resources:
 - repo: self
@@ -121,7 +125,7 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '9a09ee63-ac1c-4d59-93f6-d187a42bf201'
-  imageRepository: 'resultapp'
+  imageRepository: 'workerapp'
   containerRegistry: 'conrg1.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -143,7 +147,7 @@ stages:
         containerRegistry: '$(dockerRegistryServiceConnection)'
         repository: '$(imageRepository)'
         command: 'build'
-        Dockerfile: 'result/Dockerfile'
+        Dockerfile: 'worker/Dockerfile'
         tags: '$(tag)'
 - stage: Push
   displayName: push stage
