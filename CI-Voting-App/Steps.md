@@ -8,4 +8,7 @@
 
 ## Setup ACR - Azure Container Registry 
 - Got to Azure Portal --> Serarch Container registries
-- Create a Registry 
+- Create a Registry
+
+## Pipeline Setup- Total Three pipelines for result,voter & Worker
+ - Create result pipeline
